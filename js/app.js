@@ -222,6 +222,24 @@
   renderNav();
   go('dashboard');
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) {}
+    try {
+      let reloaded = false;
+      navigator.serviceWorker.register('sw.js').then((reg) => {
+        // 新 SW 接管后自动重载一次，确保用户看到最新版本
+        if (reg && reg.addEventListener) {
+          reg.addEventListener('updatefound', () => {
+            const installing = reg.installing;
+            if (installing) installing.addEventListener('statechange', () => {
+              if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage('skipWaiting');
+              }
+            });
+          });
+        }
+      }).catch(() => {});
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!reloaded) { reloaded = true; location.reload(); }
+      });
+    } catch (e) {}
   }
 })();
