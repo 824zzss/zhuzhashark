@@ -19,6 +19,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+img, video { max-width: 100%; height: auto; }
 
 html, body {
   height: 100%;
@@ -270,12 +271,16 @@ textarea { resize: vertical; min-height: 70px; }
 /* ===== 响应式：移动端竖屏 ===== */
 .mobile-only { display: none; }
 @media (max-width: 860px) {
+  html, body { overflow-x: hidden; }
   #sidebar { display: none; }
-  #app { display: block; }
+  #app { display: block; width: 100%; max-width: none; }
+  #content, .view { width: 100%; min-width: 0; }
+  .card { width: 100%; max-width: 100%; box-sizing: border-box; }
   .mobile-only { display: inline-flex; }
   #topbar { padding: 14px 18px; background: linear-gradient(180deg, var(--cream) 80%, transparent); }
   .view { padding: 4px 16px 90px; }
   #fab { right: 18px; bottom: 78px; width: 54px; height: 54px; font-size: 26px; }
+  svg { max-width: 100%; height: auto; }
 
   .bottom-tabs {
     display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
