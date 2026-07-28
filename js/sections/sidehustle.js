@@ -39,7 +39,7 @@
   function drawBars(values, w, h, color) {
     const max = Math.max(1, ...values.map((v) => Math.abs(v)));
     const bw = (w - 16) / values.length;
-    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` + values.map((v, i) => {
+    return `<svg style="width:100%;height:auto;max-width:100%;display:block;" viewBox="0 0 ${w} ${h}">` + values.map((v, i) => {
       const bh = v ? (Math.abs(v) / max) * (h - 18) : 2;
       const col = v < 0 ? '#E23A6E' : color;
       return `<rect x="${8 + i * bw + 3}" y="${h - bh - 8}" width="${bw - 6}" height="${bh}" rx="4" fill="${col}" opacity="${v ? 1 : .25}"/>`;
