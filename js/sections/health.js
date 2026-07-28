@@ -148,7 +148,7 @@
   function drawBars(values, w, h, color) {
     const max = Math.max(1, ...values);
     const bw = (w - 16) / values.length;
-    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` + values.map((v, i) => {
+    return `<svg style="width:100%;height:auto;max-width:100%;display:block;" viewBox="0 0 ${w} ${h}">` + values.map((v, i) => {
       const bh = v ? (v / max) * (h - 18) : 2;
       return `<rect x="${8 + i * bw + 3}" y="${h - bh - 8}" width="${bw - 6}" height="${bh}" rx="4" fill="${color}" opacity="${v ? 1 : .25}"/>`;
     }).join('') + `</svg>`;
