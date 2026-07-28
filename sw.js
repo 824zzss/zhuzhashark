@@ -1,7 +1,8 @@
-/* 猪猪鲨手 Service Worker - 离线缓存静态资源 */
-const CACHE = 'zzsk_v5';
+/* 猪猪鲨手 Service Worker - 离线缓存 + 及时更新 */
+const CACHE = 'zzsk_v6';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './icon.svg',
+  './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './css/style.css',
   './js/db.js', './js/app.js', './js/ai.js',
   './js/sections/placeholder.js', './js/sections/dashboard.js', './js/sections/daily-plan.js',
@@ -19,13 +20,26 @@ self.addEventListener('activate', (e) => {
 });
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then((hit) => hit ||
-      fetch(e.request).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(e.request, copy));
-        return res;
-      }).catch(() => hit)
-    )
-  );
+  const url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) return; // 只处理同源资源
+  const isNav = e.request.mode === 'navigate';
+  const isCode = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
+  e.respondWith((async () => {
+    const cache = await caches.open(CACHE);
+    const cached = await cache.match(e.request);
+    const netPromise = fetch(e.request).then((res) => {
+      if (res && res.status === 200 && res.type !== 'opaque') cache.put(e.request, res.clone());
+      return res;
+    }).catch(() => cached);
+    // 页面骨架与脚本：网络优先，保证更新即时生效；失败再回退缓存
+    if (isNav || isCode) {
+      try {
+        return await netPromise;
+      } catch (_) {
+        return cached || (isNav ? cache.match('./index.html') : null);
+      }
+    }
+    // 其余资源：stale-while-revalidate（先用缓存，后台更新）
+    return cached || netPromise;
+  })());
 });
