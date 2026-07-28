@@ -61,14 +61,14 @@
   }
 
   function drawEnergyLine(items, w, h) {
-    if (!items.length) return `<svg width="${w}" height="${h}"></svg>`;
+    if (!items.length) return `<svg style="width:100%;height:auto;max-width:100%;display:block;" viewBox="0 0 ${w} ${h}"></svg>`;
     const max = 5, min = 1;
     const X = (i) => 8 + i * (w - 16) / (items.length - 1 || 1);
     const Y = (v) => h - 12 - ((v - min) / (max - min)) * (h - 26);
     const d = items.map((p, i) => (i === 0 ? 'M' : 'L') + X(i).toFixed(1) + ' ' + Y(p.energy).toFixed(1)).join(' ');
     const dots = items.map((p, i) => `<circle cx="${X(i).toFixed(1)}" cy="${Y(p.energy).toFixed(1)}" r="3" fill="#FF7AA2"/>`).join('');
     const labels = items.length > 1 ? `<text x="8" y="${h - 2}" font-size="10" fill="#b9a89c">${items[0].date.slice(5)}</text><text x="${w - 8}" y="${h - 2}" font-size="10" fill="#b9a89c" text-anchor="end">${items[items.length - 1].date.slice(5)}</text>` : '';
-    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    return `<svg style="width:100%;height:auto;max-width:100%;display:block;" viewBox="0 0 ${w} ${h}">
       <path d="${d}" fill="none" stroke="#FF7AA2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${dots}${labels}</svg>`;
   }
 
